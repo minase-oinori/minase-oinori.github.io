@@ -24,16 +24,22 @@
       color: #2070d0;
       font-variant-numeric: tabular-nums;
     }
+    h1 {
+      margin: 32px 0 0 32px;
+      font-size: 2em;
+      font-weight: bold;
+      color: #222;
+    }
   </style>
 </head>
 <body>
+  <h1>滞在時間</h1> <!-- ←この行を追加 -->
   <div id="stay-time-block">
     <span id="stay-time-label">滞在時間：</span>
     <span id="stay-time-seconds">0</span> 秒
   </div>
 
   <script>
-    // dataLayerがなければ初期化
     window.dataLayer = window.dataLayer || [];
 
     let startTime = Date.now();
@@ -61,7 +67,6 @@
 
     updateStayTime();
   </script>
-
   <!-- Google Tag Manager -->
   <noscript>
     <iframe src="//www.googletagmanager.com/ns.html?id=GTM-5HWRQ3Z9"
