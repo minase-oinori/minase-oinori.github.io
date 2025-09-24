@@ -1,0 +1,79 @@
+a:hover img {
+  opacity:1;
+  filter: alpha(opacity=80);
+  -ms-filter: "alpha( opacity=80 )";
+  transition: 0.4s;
+  }
+  .floating-banner {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 99;
+  }
+  .target.is-hidden {
+  display: none;
+  }
+  p {
+  margin: 0;
+  }
+  /* ボタンの設定 */
+  .floating-banner_button {
+  display: block;
+  width: 30px;
+  height: 30px;
+  background-color: rgb(87,87,87);
+  position: absolute;
+  left: 92.5%;
+  cursor: pointer;
+  }
+  /* アイコンの設定(開) */
+  .floating-banner_button::before, .floating-banner_button::after {
+  display: block;
+  content: '';
+  width: 4px;
+  height: 24px;
+  background-color: #FFF;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  }
+  .floating-banner_button::before {
+  transform: rotateZ(90deg);
+  }
+  .floating-banner_button::after {
+  transform: rotateZ(90deg);
+  }
+  /* アイコンの設定(閉) */
+  .floating-banner_buttonClose {
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+  background-color: rgb(87,87,87);
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  cursor: pointer;
+  }
+  .floating-banner_buttonClose::before, .floating-banner_buttonClose::after {
+  display: block;
+  content: '';
+  width: 4px;
+  height: 24px;
+  background-color: #FFF;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  }
+  .floating-banner_buttonClose::before {
+  transform: rotateZ(0deg);
+  }
+  .floating-banner_buttonClose::after {
+  transform: rotateZ(90deg);
+  }

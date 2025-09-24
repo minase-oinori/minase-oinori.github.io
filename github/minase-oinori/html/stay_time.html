@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>滞在時間計測</title>
+  <style>
+    #stay-time-block {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #fff;
+      border: 1px solid #888;
+      padding: 18px 32px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      font-size: 18px;
+      z-index: 9999;
+    }
+    #stay-time-label {
+      font-weight: bold;
+      margin-right: 8px;
+    }
+    #stay-time-seconds {
+      color: #2070d0;
+      font-variant-numeric: tabular-nums;
+    }
+    h1 {
+      margin: 32px 0 0 32px;
+      font-size: 2em;
+      font-weight: bold;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+  <h1>滞在時間</h1> <!-- ←この行を追加 -->
+  <div id="stay-time-block">
+    <span id="stay-time-label">滞在時間：</span>
+    <span id="stay-time-seconds">0</span> 秒
+  </div>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    let startTime = Date.now();
+    let seconds = 0;
+    let thresholds = [10, 20, 30];
+    let reported = {};
+
+    function updateStayTime() {
+      const now = Math.floor((Date.now() - startTime) / 1000);
+      if (now !== seconds) {
+        seconds = now;
+        document.getElementById("stay-time-seconds").textContent = seconds;
+
+        // 10s, 20s, 30s で一度だけevent push
+        if (thresholds.includes(seconds) && !reported[seconds]) {
+          window.dataLayer.push({
+            event: "stay_time",
+            time: seconds + "s"
+          });
+          reported[seconds] = true;
+        }
+      }
+      requestAnimationFrame(updateStayTime);
+    }
+
+    updateStayTime();
+  </script>
+  <!-- Google Tag Manager -->
+  <noscript>
+    <iframe src="//www.googletagmanager.com/ns.html?id=GTM-5HWRQ3Z9"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-5HWRQ3Z9');
+  </script>
+  <!-- End Google Tag Manager -->
+</body>
+</html>
