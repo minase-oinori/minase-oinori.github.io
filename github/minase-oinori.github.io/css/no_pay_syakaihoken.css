@@ -1,0 +1,376 @@
+/* 社会保険料シミュレーター — 白黒基調モノクローム */
+
+:root {
+  --bg: #ebeae8;
+  --bg-elevated: #f7f6f4;
+  --surface: #ffffff;
+  --ink: #0d0d0d;
+  --ink-muted: #5a5a5a;
+  --line: #c8c6c3;
+  --line-strong: #1a1a1a;
+  --accent-bg: #f0f0ee;
+  --focus: #0d0d0d;
+  --radius: 8px;
+  --radius-sm: 4px;
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+  --font: "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body.page {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.5;
+  padding: clamp(1rem, 3vw, 2rem);
+  letter-spacing: 0.01em;
+}
+
+body.page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, transparent 32%);
+  z-index: 0;
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.site-header {
+  border-bottom: 2px solid var(--line-strong);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.site-header h1 {
+  font-size: clamp(1.25rem, 2.5vw, 1.6rem);
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.02em;
+}
+
+.site-header .sub {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+  max-width: 52ch;
+}
+
+.grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 840px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+section.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.15rem 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+section.card h2 {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-muted);
+  margin: 0 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+section.card h2 + h2 {
+  margin-top: 1.25rem;
+}
+
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+table.data th,
+table.data td {
+  border: 1px solid var(--line);
+  padding: 0.4rem 0.5rem;
+  vertical-align: middle;
+}
+
+table.data th {
+  background: var(--accent-bg);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+table.data td.num,
+table.data th.num {
+  text-align: right;
+}
+
+/* .out は display:flex のため、表の td に付けると列が崩れて内容が重なる */
+table.data td.out {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+label.field {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+  margin-bottom: 0.3rem;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 0.5rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--focus);
+  box-shadow: 0 0 0 2px rgba(13, 13, 13, 0.12);
+}
+
+input.in-key {
+  background: var(--bg-elevated);
+  border-color: var(--line-strong);
+}
+
+.yen-input-wrap {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-elevated);
+}
+
+.yen-input-wrap:focus-within {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 2px rgba(13, 13, 13, 0.12);
+}
+
+.yen-sym {
+  padding: 0.5rem 0.35rem 0.5rem 0.55rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--ink-muted);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.yen-input-wrap .yen-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--bg-elevated);
+}
+
+.yen-input-wrap .yen-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #e8e8e6;
+}
+
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.out {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  padding: 0.45rem 0.5rem;
+  background: var(--accent-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  min-height: 2.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.dash {
+  color: var(--ink-muted);
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0.65rem 0;
+  font-size: 0.875rem;
+  color: var(--ink);
+}
+
+.check input[type="checkbox"] {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-top: 0.2rem;
+  accent-color: var(--ink);
+  flex-shrink: 0;
+}
+
+.check label.field {
+  margin: 0;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--ink);
+}
+
+.inline-days {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.65rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.inline-days label.field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.inline-days input[type="text"] {
+  width: 3.25rem;
+  text-align: right;
+}
+
+.parity {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.parity strong {
+  color: var(--ink);
+  font-size: 0.8rem;
+}
+
+.parity code {
+  font-size: 0.72rem;
+  background: var(--accent-bg);
+  border: 1px solid var(--line);
+  padding: 0.12rem 0.35rem;
+  border-radius: var(--radius-sm);
+  font-family: ui-monospace, monospace;
+}
+
+.mt-sm { margin-top: 0.5rem; }
+.mt-md { margin-top: 0.75rem; }
+.mt-lg { margin-top: 1rem; }
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.note-payroll {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  margin: 0;
+  max-width: 52ch;
+}
+
+.commute-revision-note {
+  max-width: none;
+  margin-bottom: 0.5rem;
+}
+
+.tradeoff-note {
+  max-width: none;
+}
+
+.tradeoff-blocks {
+  align-items: start;
+}
+
+.tradeoff-block .out {
+  min-height: 2.75rem;
+}
+
+table.payroll-by-month {
+  min-width: 38rem;
+}
+
+table.payroll-by-month th[scope="row"] {
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+table.payroll-by-month th[scope="row"] .dash {
+  font-weight: 400;
+  font-size: 0.72rem;
+}
+
+table.payroll-by-month tfoot th {
+  text-align: right;
+  vertical-align: middle;
+}
+
+table.payroll-by-month td.out {
+  display: table-cell;
+  vertical-align: middle;
+}
