@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>社会保険料シミュレーター</title>
+  <link rel="stylesheet" href="../css/no_pay_syakaihoken.css">
+</head>
+<body class="page">
+  <main class="shell">
+  <header class="site-header">
+  <h1>社会保険料シミュレーター</h1>
+  <p class="sub">通勤・残業・基本給などを入力。リモート手当は月4,000円固定。固定残業代は（基本給＋4,000）÷140×1.25×営業日数×1.5で自動計算（営業日数は4〜6月で21・18・22日固定）。保険料は保険料額表の折半額を合算。</p>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <h2>勤怠・単価（3〜5月）</h2>
+      <p class="note-payroll commute-revision-note">3月は<strong>3/13</strong>に通勤費が値上げされた想定です。3月の出社は上段（〜3/13）・下段（3/14〜）に分けて入力してください。4・5月の通勤は<strong>値上げ後</strong>の単価だけで計算します。</p>
+      <div class="row2">
+        <div>
+          <label class="field" for="b3-pre">通勤（円/回・値上げ前）〜3/13</label>
+          <input type="text" inputmode="numeric" class="in-key" id="b3-pre" value="" placeholder="例: 500" autocomplete="off">
+        </div>
+        <div>
+          <label class="field" for="b3-post">通勤（円/回・値上げ後）3/14〜</label>
+          <input type="text" inputmode="numeric" class="in-key" id="b3-post" value="" placeholder="例: 550" autocomplete="off">
+        </div>
+      </div>
+
+      <label class="field mt-md">時間外勤務手当（円/h・表示）</label>
+      <div class="out" id="disp-b2">—</div>
+
+      <table class="data mt-md">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="num">出社回数</th>
+            <th class="num">固定残業超過分(h)</th>
+            <th class="num">通勤手当</th>
+            <th class="num">時間外</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>3月（〜3/13）</td><td><input type="text" class="in-key num narrow" id="b5a" value="0"></td><td><input type="text" class="num" id="d5" value="10"></td><td class="num out" id="c5pre">—</td><td class="num out" id="e5">—</td></tr>
+          <tr><td>3月（3/14〜）</td><td><input type="text" class="in-key num narrow" id="b5b" value="0"></td><td class="num dash">—</td><td class="num out" id="c5post">—</td><td class="num dash">—</td></tr>
+          <tr><td>4月</td><td><input type="text" class="in-key num" id="b6" value="0"></td><td><input type="text" class="num" id="d6" value="0"></td><td class="num out" id="c6">—</td><td class="num out" id="e6">—</td></tr>
+          <tr><td>5月</td><td><input type="text" class="in-key num" id="b7" value="0"></td><td><input type="text" class="num" id="d7" value="0"></td><td class="num out" id="c7">—</td><td class="num out" id="e7">—</td></tr>
+          <tr><th>計</th><td class="num out" id="b8">—</td><td class="num out" id="d8">—</td><td class="num out" id="c8">—</td><td class="num out" id="e8">—</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="mt-lg">出社見込みと時間外のトレードオフ（試算）</h2>
+      <p class="note-payroll tradeoff-note">勤怠表に<strong>まだ入れていない</strong>追加の出社回数・時間外（3〜5月の<strong>合計</strong>）について、下のどちらか一方を入力すると、もう一方の上限の目安が表示されます。試算をそろえるには、その分も上の表に反映してください。</p>
+      <div class="row2 mt-md tradeoff-blocks">
+        <div class="tradeoff-block">
+          <label class="field" for="planCommuteTotal">追加する出社回数（3〜5月・合計）</label>
+          <input type="text" inputmode="numeric" class="in-key" id="planCommuteTotal" value="" placeholder="例: 5" autocomplete="off">
+          <label class="field mt-sm">なら、追加できる時間外は最大（h・合計）</label>
+          <div class="out" id="planMaxOt">—</div>
+        </div>
+        <div class="tradeoff-block">
+          <label class="field" for="planOtTotal">追加する時間外（h・3〜5月・合計）</label>
+          <input type="text" inputmode="numeric" class="in-key" id="planOtTotal" value="" placeholder="例: 20" autocomplete="off">
+          <label class="field mt-sm">なら、追加できる出社回数は最大（回・合計）</label>
+          <div class="out" id="planMaxCommute">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>給与内訳（4〜6月）・社会保険</h2>
+      <label class="field">基本給（4〜6月とも同額）</label>
+      <div class="yen-input-wrap in-key">
+        <span class="yen-sym" aria-hidden="true">￥</span>
+        <input type="text" class="yen-input" id="b12" value="" placeholder="例: 300,000" inputmode="numeric" autocomplete="off">
+      </div>
+      <p class="dash mt-sm note-payroll">リモート手当は月4,000円固定。固定残業代は（基本給＋4,000）÷140×1.25×営業日数×1.5。<br><br>営業日数は以下で固定<br>・4月→21営業日<br>・5月→18営業日<br>・6月→22営業日</p>
+
+      <div class="table-scroll mt-md">
+      <table class="data payroll-by-month">
+        <thead>
+          <tr>
+            <th scope="col">月</th>
+            <th scope="col" class="num">基本給</th>
+            <th scope="col" class="num">リモート手当</th>
+            <th scope="col" class="num">固定残業代</th>
+            <th scope="col" class="num">時間外手当</th>
+            <th scope="col" class="num">通勤手当</th>
+            <th scope="col" class="num">月計</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">4月<span class="dash">（21営業日）</span></th>
+            <td class="num out" id="m4-base">—</td>
+            <td class="num out" id="m4-remote">—</td>
+            <td class="num out" id="m4-fixed">—</td>
+            <td class="num out" id="m4-ot">—</td>
+            <td class="num out" id="m4-com">—</td>
+            <td class="num out" id="m4-sum">—</td>
+          </tr>
+          <tr>
+            <th scope="row">5月<span class="dash">（18営業日）</span></th>
+            <td class="num out" id="m5-base">—</td>
+            <td class="num out" id="m5-remote">—</td>
+            <td class="num out" id="m5-fixed">—</td>
+            <td class="num out" id="m5-ot">—</td>
+            <td class="num out" id="m5-com">—</td>
+            <td class="num out" id="m5-sum">—</td>
+          </tr>
+          <tr>
+            <th scope="row">6月<span class="dash">（22営業日）</span></th>
+            <td class="num out" id="m6-base">—</td>
+            <td class="num out" id="m6-remote">—</td>
+            <td class="num out" id="m6-fixed">—</td>
+            <td class="num out" id="m6-ot">—</td>
+            <td class="num out" id="m6-com">—</td>
+            <td class="num out" id="m6-sum">—</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th scope="row" colspan="6" class="num">3か月合計</th>
+            <td class="num out" id="e17">—</td>
+          </tr>
+        </tfoot>
+      </table>
+      </div>
+
+      <div class="check">
+        <input type="checkbox" id="autoRange" checked>
+        <label class="field" for="autoRange">報酬月額の下限・上限を3か月平均から自動入力</label>
+      </div>
+      <div class="row2">
+        <div>
+          <label class="field">報酬月額・下限（月）</label>
+          <input type="text" id="j4" class="in-key" value="395000" autocomplete="off">
+        </div>
+        <div>
+          <label class="field">報酬月額・上限（月）</label>
+          <input type="text" id="k4" class="in-key" value="425000" autocomplete="off">
+        </div>
+      </div>
+      <div class="row2 mt-sm">
+        <div>
+          <label class="field">3か月合計（下限側）</label>
+          <div class="out" id="j5">—</div>
+        </div>
+        <div>
+          <label class="field">3か月合計（上限側）</label>
+          <div class="out" id="k5">—</div>
+        </div>
+      </div>
+
+      <h2 class="mt-lg">社会保険（表参照）</h2>
+      <div class="check">
+        <input type="checkbox" id="care">
+        <label class="field" for="care">介護保険（該当）の健康保険折半額を使う</label>
+      </div>
+      <table class="data">
+        <tbody>
+          <tr><th>等級（表）</th><td class="out" id="gradeLabel">—</td></tr>
+          <tr><th>標準報酬月額</th><td class="num out" id="stdPay">—</td></tr>
+          <tr><th>標準月額（千円）</th><td class="num out" id="i4disp">—</td></tr>
+          <tr><th>被保険者負担（月額・折半合算）</th><td class="num out" id="insTotal">—</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <div class="parity">
+    <strong>照合用メモ（開発者向け）</strong>
+    <p>元となったブックの「計算器」とは異なり、本ページでは固定残業代を上記の式で自動計算し、リモートは4,000円固定です。営業日数は4月21・5月18・6月22日固定。通勤・残業・基本給・3か月支給合計まわりの計算は従来どおりのロジックに準拠します。</p>
+    <p>主な入力: 通勤単価（値上げ前後）、3月出社（〜3/13・3/14〜）、4・5月の出社と時間外、基本給、報酬月額の下限・上限（自動入力オン時は不要）。3月の時間外は勤怠表の上段のみ。</p>
+  </div>
+  </main>
+
+  <script type="text/plain" id="premium-md-source">
+| 標準報酬等級 | 標準報酬月額 | 報酬月額(円以上) | 報酬月額(円未満) | 健康保険料(介護非該当) 全額 | 健康保険料(介護非該当) 折半額 | 健康保険料(介護該当) 全額 | 健康保険料(介護該当) 折半額 | 子ども・子育て支援金 全額 | 子ども・子育て支援金 折半額 | 厚生年金保険料 全額 | 厚生年金保険料 折半額 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 58,000 | - | 63,000 | 5,713.0 | 2,856.5 | 6,652.6 | 3,326.3 | 133.4 | 66.7 | - | - |
+| 2 | 68,000 | 63,000 | 73,000 | 6,698.0 | 3,349.0 | 7,799.6 | 3,899.8 | 156.4 | 78.2 | - | - |
+| 3 | 78,000 | 73,000 | 83,000 | 7,683.0 | 3,841.5 | 8,946.6 | 4,473.3 | 179.4 | 89.7 | - | - |
+| 4(1) | 88,000 | 83,000 | 93,000 | 8,668.0 | 4,334.0 | 10,093.6 | 5,046.8 | 202.4 | 101.2 | 16,104.00 | 8,052.00 |
+| 5(2) | 98,000 | 93,000 | 101,000 | 9,653.0 | 4,826.5 | 11,240.6 | 5,620.3 | 225.4 | 112.7 | 17,934.00 | 8,967.00 |
+| 6(3) | 104,000 | 101,000 | 107,000 | 10,244.0 | 5,122.0 | 11,928.8 | 5,964.4 | 239.2 | 119.6 | 19,032.00 | 9,516.00 |
+| 7(4) | 110,000 | 107,000 | 114,000 | 10,835.0 | 5,417.5 | 12,617.0 | 6,308.5 | 253.0 | 126.5 | 20,130.00 | 10,065.00 |
+| 8(5) | 118,000 | 114,000 | 122,000 | 11,623.0 | 5,811.5 | 13,534.6 | 6,767.3 | 271.4 | 135.7 | 21,594.00 | 10,797.00 |
+| 9(6) | 126,000 | 122,000 | 130,000 | 12,411.0 | 6,205.5 | 14,452.2 | 7,226.1 | 289.8 | 144.9 | 23,058.00 | 11,529.00 |
+| 10(7) | 134,000 | 130,000 | 138,000 | 13,199.0 | 6,599.5 | 15,369.8 | 7,684.9 | 308.2 | 154.1 | 24,522.00 | 12,261.00 |
+| 11(8) | 142,000 | 138,000 | 146,000 | 13,987.0 | 6,993.5 | 16,287.4 | 8,143.7 | 326.6 | 163.3 | 25,986.00 | 12,993.00 |
+| 12(9) | 150,000 | 146,000 | 155,000 | 14,775.0 | 7,387.5 | 17,205.0 | 8,602.5 | 345.0 | 172.5 | 27,450.00 | 13,725.00 |
+| 13(10) | 160,000 | 155,000 | 165,000 | 15,760.0 | 7,880.0 | 18,352.0 | 9,176.0 | 368.0 | 184.0 | 29,280.00 | 14,640.00 |
+| 14(11) | 170,000 | 165,000 | 175,000 | 16,745.0 | 8,372.5 | 19,499.0 | 9,749.5 | 391.0 | 195.5 | 31,110.00 | 15,555.00 |
+| 15(12) | 180,000 | 175,000 | 185,000 | 17,730.0 | 8,865.0 | 20,646.0 | 10,323.0 | 414.0 | 207.0 | 32,940.00 | 16,470.00 |
+| 16(13) | 190,000 | 185,000 | 195,000 | 18,715.0 | 9,357.5 | 21,793.0 | 10,896.5 | 437.0 | 218.5 | 34,770.00 | 17,385.00 |
+| 17(14) | 200,000 | 195,000 | 210,000 | 19,700.0 | 9,850.0 | 22,940.0 | 11,470.0 | 460.0 | 230.0 | 36,600.00 | 18,300.00 |
+| 18(15) | 220,000 | 210,000 | 230,000 | 21,670.0 | 10,835.0 | 25,234.0 | 12,617.0 | 506.0 | 253.0 | 40,260.00 | 20,130.00 |
+| 19(16) | 240,000 | 230,000 | 250,000 | 23,640.0 | 11,820.0 | 27,528.0 | 13,764.0 | 552.0 | 276.0 | 43,920.00 | 21,960.00 |
+| 20(17) | 260,000 | 250,000 | 270,000 | 25,610.0 | 12,805.0 | 29,822.0 | 14,911.0 | 598.0 | 299.0 | 47,580.00 | 23,790.00 |
+| 21(18) | 280,000 | 270,000 | 290,000 | 27,580.0 | 13,790.0 | 32,116.0 | 16,058.0 | 644.0 | 322.0 | 51,240.00 | 25,620.00 |
+| 22(19) | 300,000 | 290,000 | 310,000 | 29,550.0 | 14,775.0 | 34,410.0 | 17,205.0 | 690.0 | 345.0 | 54,900.00 | 27,450.00 |
+| 23(20) | 320,000 | 310,000 | 330,000 | 31,520.0 | 15,760.0 | 36,704.0 | 18,352.0 | 736.0 | 368.0 | 58,560.00 | 29,280.00 |
+| 24(21) | 340,000 | 330,000 | 350,000 | 33,490.0 | 16,745.0 | 38,998.0 | 19,499.0 | 782.0 | 391.0 | 62,220.00 | 31,110.00 |
+| 25(22) | 360,000 | 350,000 | 370,000 | 35,460.0 | 17,730.0 | 41,292.0 | 20,646.0 | 828.0 | 414.0 | 65,880.00 | 32,940.00 |
+| 26(23) | 380,000 | 370,000 | 395,000 | 37,430.0 | 18,715.0 | 43,586.0 | 21,793.0 | 874.0 | 437.0 | 69,540.00 | 34,770.00 |
+| 27(24) | 410,000 | 395,000 | 425,000 | 40,385.0 | 20,192.5 | 47,027.0 | 23,513.5 | 943.0 | 471.5 | 75,030.00 | 37,515.00 |
+| 28(25) | 440,000 | 425,000 | 455,000 | 43,340.0 | 21,670.0 | 50,468.0 | 25,234.0 | 1,012.0 | 506.0 | 80,520.00 | 40,260.00 |
+| 29(26) | 470,000 | 455,000 | 485,000 | 46,295.0 | 23,147.5 | 53,909.0 | 26,954.5 | 1,081.0 | 540.5 | 86,010.00 | 43,005.00 |
+| 30(27) | 500,000 | 485,000 | 515,000 | 49,250.0 | 24,625.0 | 57,350.0 | 28,675.0 | 1,150.0 | 575.0 | 91,500.00 | 45,750.00 |
+| 31(28) | 530,000 | 515,000 | 545,000 | 52,205.0 | 26,102.5 | 60,791.0 | 30,395.5 | 1,219.0 | 609.5 | 96,990.00 | 48,495.00 |
+| 32(29) | 560,000 | 545,000 | 575,000 | 55,160.0 | 27,580.0 | 64,232.0 | 32,116.0 | 1,288.0 | 644.0 | 102,480.00 | 51,240.00 |
+| 33(30) | 590,000 | 575,000 | 605,000 | 58,115.0 | 29,057.5 | 67,673.0 | 33,836.5 | 1,357.0 | 678.5 | 107,970.00 | 53,985.00 |
+| 34(31) | 620,000 | 605,000 | 635,000 | 61,070.0 | 30,535.0 | 71,114.0 | 35,557.0 | 1,426.0 | 713.0 | 113,460.00 | 56,730.00 |
+| 35(32) | 650,000 | 635,000 | 665,000 | 64,025.0 | 32,012.5 | 74,555.0 | 37,277.5 | 1,495.0 | 747.5 | 118,950.00 | 59,475.00 |
+| 36 | 680,000 | 665,000 | 695,000 | 66,980.0 | 33,490.0 | 77,996.0 | 38,998.0 | 1,564.0 | 782.0 | - | - |
+| 37 | 710,000 | 695,000 | 730,000 | 69,935.0 | 34,967.5 | 81,437.0 | 40,718.5 | 1,633.0 | 816.5 | - | - |
+| 38 | 750,000 | 730,000 | 770,000 | 73,875.0 | 36,937.5 | 86,025.0 | 43,012.5 | 1,725.0 | 862.5 | - | - |
+| 39 | 790,000 | 770,000 | 810,000 | 77,815.0 | 38,907.5 | 90,613.0 | 45,306.5 | 1,817.0 | 908.5 | - | - |
+| 40 | 830,000 | 810,000 | 855,000 | 81,755.0 | 40,877.5 | 95,201.0 | 47,600.5 | 1,909.0 | 954.5 | - | - |
+| 41 | 880,000 | 855,000 | 905,000 | 86,680.0 | 43,340.0 | 100,936.0 | 50,468.0 | 2,024.0 | 1,012.0 | - | - |
+| 42 | 930,000 | 905,000 | 955,000 | 91,605.0 | 45,802.5 | 106,671.0 | 53,335.5 | 2,139.0 | 1,069.5 | - | - |
+| 43 | 980,000 | 955,000 | 1,005,000 | 96,530.0 | 48,265.0 | 112,406.0 | 56,203.0 | 2,254.0 | 1,127.0 | - | - |
+| 44 | 1,030,000 | 1,005,000 | 1,055,000 | 101,455.0 | 50,727.5 | 118,141.0 | 59,070.5 | 2,369.0 | 1,184.5 | - | - |
+| 45 | 1,090,000 | 1,055,000 | 1,115,000 | 107,365.0 | 53,682.5 | 125,023.0 | 62,511.5 | 2,507.0 | 1,253.5 | - | - |
+| 46 | 1,150,000 | 1,115,000 | 1,175,000 | 113,275.0 | 56,637.5 | 131,905.0 | 65,952.5 | 2,645.0 | 1,322.5 | - | - |
+| 47 | 1,210,000 | 1,175,000 | 1,235,000 | 119,185.0 | 59,592.5 | 138,787.0 | 69,393.5 | 2,783.0 | 1,391.5 | - | - |
+| 48 | 1,270,000 | 1,235,000 | 1,295,000 | 125,095.0 | 62,547.5 | 145,669.0 | 72,834.5 | 2,921.0 | 1,460.5 | - | - |
+| 49 | 1,330,000 | 1,295,000 | 1,355,000 | 131,005.0 | 65,502.5 | 152,551.0 | 76,275.5 | 3,059.0 | 1,529.5 | - | - |
+| 50 | 1,390,000 | 1,355,000 | - | 136,915.0 | 68,457.5 | 159,433.0 | 79,716.5 | 3,197.0 | 1,598.5 | - | - |
+  </script>
+
+  <script>
+(function () {
+  'use strict';
+
+  /** @typedef {{ gradeLabel: string, std: number, payMin: number|null, payMax: number|null, hn: number, hc: number, ch: number, ph: number|null }} PremiumRow */
+
+  /**
+   * 保険料額表（埋め込みテキスト）をパース。ソースは 保険料額表.md と同一。
+   * @param {string} md
+   * @returns {PremiumRow[]}
+   */
+  function parsePremiumMd(md) {
+    const rows = [];
+    const lines = md.split(/\r?\n/);
+    for (const line of lines) {
+      if (!line.startsWith('|') || line.includes('標準報酬等級')) continue;
+      if (/^\|\s*-/.test(line)) continue;
+      const parts = line.split('|').map(function (s) { return s.trim(); }).filter(Boolean);
+      if (parts.length < 13) continue;
+      function num(s) {
+        if (s === '-' || s === '') return null;
+        return parseFloat(String(s).replace(/,/g, ''));
+      }
+      rows.push({
+        gradeLabel: parts[0],
+        std: /** @type {number} */ (num(parts[1])),
+        payMin: parts[2] === '-' ? null : /** @type {number} */ (num(parts[2])),
+        payMax: parts[3] === '-' ? null : /** @type {number} */ (num(parts[3])),
+        hn: /** @type {number} */ (num(parts[5])),
+        hc: /** @type {number} */ (num(parts[7])),
+        ch: /** @type {number} */ (num(parts[9])),
+        ph: num(parts[11])
+      });
+    }
+    return rows;
+  }
+
+  const PREMIUM_TABLE = parsePremiumMd(document.getElementById('premium-md-source').textContent);
+
+  /**
+   * 報酬月額（月あたり）から標準報酬の行を取得（手入力の下限・上限レンジの元）。
+   * @param {number} monthlyPay
+   * @returns {PremiumRow|null}
+   */
+  function getStandardSalary(monthlyPay) {
+    if (!Number.isFinite(monthlyPay)) return null;
+    for (let i = 0; i < PREMIUM_TABLE.length; i++) {
+      const r = PREMIUM_TABLE[i];
+      const lo = r.payMin == null ? -Infinity : r.payMin;
+      const hi = r.payMax == null ? Infinity : r.payMax;
+      if (monthlyPay >= lo && monthlyPay < hi) return r;
+    }
+    const last = PREMIUM_TABLE[PREMIUM_TABLE.length - 1];
+    if (last && last.payMax == null && monthlyPay >= (last.payMin || 0)) return last;
+    return null;
+  }
+
+  /**
+   * @param {PremiumRow} row
+   * @param {{ care: boolean }} opts
+   */
+  function calculateInsurance(row, opts) {
+    const health = opts.care ? row.hc : row.hn;
+    const child = row.ch;
+    const pension = row.ph == null ? 0 : row.ph;
+    return health + child + pension;
+  }
+
+  /**
+   * 3か月の支給合計から求めた平均報酬月額（仕様上の月額指標）。
+   * @param {{ e17: number }} sheet
+   */
+  function calculateMonthlyIncome(sheet) {
+    return sheet.e17 / 3;
+  }
+
+  function parseInput(str) {
+    if (str == null || String(str).trim() === '') return 0;
+    const n = parseFloat(String(str).replace(/,/g, '').replace(/\s/g, '').replace(/[¥￥]/g, ''));
+    return Number.isFinite(n) ? n : NaN;
+  }
+
+  /** 空欄は null（未入力）、数値化できなければ NaN */
+  function parseOptionalInput(str) {
+    if (str == null || String(str).trim() === '') return null;
+    var n = parseFloat(String(str).replace(/,/g, '').replace(/\s/g, ''));
+    return Number.isFinite(n) ? n : NaN;
+  }
+
+  var nfInt = new Intl.NumberFormat('ja-JP', { maximumFractionDigits: 0 });
+  var nfDec = new Intl.NumberFormat('ja-JP', { maximumFractionDigits: 4 });
+
+  function fmtInt(n) {
+    if (!Number.isFinite(n)) return '—';
+    return nfInt.format(Math.trunc(n));
+  }
+
+  function fmtNum(n) {
+    if (!Number.isFinite(n)) return '—';
+    return nfDec.format(n);
+  }
+
+  /** 表示用: 小数が .5 未満は切り捨て、.5 以上は切り上げ（正の金額向け） */
+  function roundHalfUpDisplay(n) {
+    if (!Number.isFinite(n)) return NaN;
+    return Math.floor(n + 0.5);
+  }
+
+  function fmtIntHalfUp(n) {
+    if (!Number.isFinite(n)) return '—';
+    return nfInt.format(roundHalfUpDisplay(n));
+  }
+
+  function stripBasePayDisplay(str) {
+    return String(str).replace(/,/g, '').replace(/[¥￥]/g, '').replace(/\s/g, '');
+  }
+
+  function formatBasePayField() {
+    var el = document.getElementById('b12');
+    if (!el) return;
+    var raw = stripBasePayDisplay(el.value);
+    if (raw === '') {
+      el.value = '';
+      return;
+    }
+    var n = parseFloat(raw);
+    if (!Number.isFinite(n)) return;
+    el.value = nfInt.format(Math.trunc(n));
+  }
+
+  /** リモート手当（円／月）— 固定 */
+  var REMOTE_FIXED = 4000;
+  /** 4〜6月の営業日数（固定） */
+  var BUSINESS_DAYS_APR = 21;
+  var BUSINESS_DAYS_MAY = 18;
+  var BUSINESS_DAYS_JUN = 22;
+
+  /**
+   * 固定残業代（月）＝（基本給＋リモート）÷140×1.25×営業日数×1.5
+   * @param {number} b12
+   * @param {number} businessDays
+   */
+  function calcFixedOvertimePay(b12, businessDays) {
+    if (!Number.isFinite(b12) || !Number.isFinite(businessDays)) return NaN;
+    return (b12 + REMOTE_FIXED) / 140 * 1.25 * businessDays * 1.5;
+  }
+
+  /**
+   * 給与計算の中間・結果（固定残業は独自式で各月計算）。
+   */
+  function computeSheet(v) {
+    var b12 = v.b12, b13 = REMOTE_FIXED, b3pre = v.b3pre, b3post = v.b3post;
+    var b5a = v.b5a, b5b = v.b5b, b6 = v.b6, b7 = v.b7;
+    var d5 = v.d5, d6 = v.d6, d7 = v.d7;
+    var i9 = BUSINESS_DAYS_APR, i10 = BUSINESS_DAYS_MAY, i11 = BUSINESS_DAYS_JUN;
+    var j4 = v.j4, k4 = v.k4;
+
+    var b2 = b12 / 140 * 1.25;
+    var c5pre = b3pre * b5a, c5post = b3post * b5b;
+    var c5 = c5pre + c5post;
+    var c6 = b3post * b6, c7 = b3post * b7;
+    var e5 = b2 * d5, e6 = b2 * d6, e7 = b2 * d7;
+    var b8 = b5a + b5b + b6 + b7;
+    var d8 = d5 + d6 + d7;
+    var b3eff = (Number.isFinite(b3post) && b3post > 0) ? b3post : ((Number.isFinite(b3pre) && b3pre > 0) ? b3pre : NaN);
+
+    var c12 = b12, d12 = b12;
+    var c13 = b13, d13 = b13;
+    var b14 = calcFixedOvertimePay(b12, i9);
+    var c14 = calcFixedOvertimePay(b12, i10);
+    var d14 = calcFixedOvertimePay(b12, i11);
+    var b15 = e5, c15 = e6, d15 = e7;
+    var b16 = c5, c16 = c6, d16 = c7;
+    var b17 = b12 + b13 + b14 + b15 + b16;
+    var c17 = c12 + c13 + c14 + c15 + c16;
+    var d17 = d12 + d13 + d14 + d15 + d16;
+    var e17 = b17 + c17 + d17;
+    var j5 = j4 * 3, k5 = k4 * 3;
+    var f17 = k5 - e17;
+    var f18 = Number.isFinite(b3eff) && b3eff !== 0 ? f17 / b3eff : NaN;
+    var b9 = Number.isFinite(f18) ? Math.trunc(f18) : NaN;
+
+    return {
+      b12: b12, b13: b13,
+      b2: b2, c5pre: c5pre, c5post: c5post, c5: c5, c6: c6, c7: c7, e5: e5, e6: e6, e7: e7, b8: b8, d8: d8,
+      b3eff: b3eff,
+      c12: c12, d12: d12, c13: c13, d13: d13, b14: b14, c14: c14, d14: d14,
+      b15: b15, c15: c15, d15: d15, b16: b16, c16: c16, d16: d16,
+      b17: b17, c17: c17, d17: d17, e17: e17, f17: f17, f18: f18, b9: b9,
+      j5: j5, k5: k5, j4: j4, k4: k4
+    };
+  }
+
+  function readValues() {
+    return {
+      b3pre: parseInput(document.getElementById('b3-pre').value),
+      b3post: parseInput(document.getElementById('b3-post').value),
+      b5a: parseInput(document.getElementById('b5a').value),
+      b5b: parseInput(document.getElementById('b5b').value),
+      b6: parseInput(document.getElementById('b6').value),
+      b7: parseInput(document.getElementById('b7').value),
+      d5: parseInput(document.getElementById('d5').value),
+      d6: parseInput(document.getElementById('d6').value),
+      d7: parseInput(document.getElementById('d7').value),
+      b12: parseInput(document.getElementById('b12').value),
+      j4: parseInput(document.getElementById('j4').value),
+      k4: parseInput(document.getElementById('k4').value)
+    };
+  }
+
+  function setText(id, s) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = s;
+  }
+
+  function recalc() {
+    var v = readValues();
+    var auto = document.getElementById('autoRange').checked;
+    var care = document.getElementById('care').checked;
+    var j4el = document.getElementById('j4');
+    var k4el = document.getElementById('k4');
+
+    var prelim = computeSheet({
+      b3pre: Number.isFinite(v.b3pre) ? v.b3pre : 0,
+      b3post: Number.isFinite(v.b3post) ? v.b3post : 0,
+      b5a: Number.isFinite(v.b5a) ? v.b5a : 0,
+      b5b: Number.isFinite(v.b5b) ? v.b5b : 0,
+      b6: Number.isFinite(v.b6) ? v.b6 : 0,
+      b7: Number.isFinite(v.b7) ? v.b7 : 0,
+      d5: Number.isFinite(v.d5) ? v.d5 : 0,
+      d6: Number.isFinite(v.d6) ? v.d6 : 0,
+      d7: Number.isFinite(v.d7) ? v.d7 : 0,
+      b12: Number.isFinite(v.b12) ? v.b12 : 0,
+      j4: Number.isFinite(v.j4) ? v.j4 : 0,
+      k4: Number.isFinite(v.k4) ? v.k4 : 0
+    });
+
+    var avg = calculateMonthlyIncome(prelim);
+    var row = getStandardSalary(avg);
+
+    if (auto && row) {
+      var j4v = row.payMin == null ? 0 : row.payMin;
+      var k4v = row.payMax == null ? 1e12 : row.payMax;
+      j4el.value = String(j4v);
+      k4el.value = String(k4v);
+      j4el.disabled = true;
+      k4el.disabled = true;
+      v.j4 = j4v;
+      v.k4 = k4v;
+    } else {
+      j4el.disabled = false;
+      k4el.disabled = false;
+    }
+
+    var s = computeSheet({
+      b3pre: Number.isFinite(v.b3pre) ? v.b3pre : 0,
+      b3post: Number.isFinite(v.b3post) ? v.b3post : 0,
+      b5a: Number.isFinite(v.b5a) ? v.b5a : 0,
+      b5b: Number.isFinite(v.b5b) ? v.b5b : 0,
+      b6: Number.isFinite(v.b6) ? v.b6 : 0,
+      b7: Number.isFinite(v.b7) ? v.b7 : 0,
+      d5: Number.isFinite(v.d5) ? v.d5 : 0,
+      d6: Number.isFinite(v.d6) ? v.d6 : 0,
+      d7: Number.isFinite(v.d7) ? v.d7 : 0,
+      b12: Number.isFinite(v.b12) ? v.b12 : 0,
+      j4: Number.isFinite(v.j4) ? v.j4 : 0,
+      k4: Number.isFinite(v.k4) ? v.k4 : 0
+    });
+
+    setText('disp-b2', fmtIntHalfUp(s.b2));
+    setText('c5pre', fmtInt(s.c5pre));
+    setText('c5post', fmtInt(s.c5post));
+    setText('c6', fmtInt(s.c6));
+    setText('c7', fmtInt(s.c7));
+    setText('e5', fmtIntHalfUp(s.e5));
+    setText('e6', fmtIntHalfUp(s.e6));
+    setText('e7', fmtIntHalfUp(s.e7));
+    setText('b8', fmtInt(s.b8));
+    setText('d8', fmtInt(s.d8));
+    setText('c8', fmtInt(s.c5 + s.c6 + s.c7));
+    setText('e8', fmtIntHalfUp(s.e5 + s.e6 + s.e7));
+    setText('m4-base', fmtInt(s.b12));
+    setText('m5-base', fmtInt(s.b12));
+    setText('m6-base', fmtInt(s.b12));
+    setText('m4-remote', fmtInt(s.b13));
+    setText('m5-remote', fmtInt(s.b13));
+    setText('m6-remote', fmtInt(s.b13));
+    setText('m4-fixed', fmtIntHalfUp(s.b14));
+    setText('m5-fixed', fmtIntHalfUp(s.c14));
+    setText('m6-fixed', fmtIntHalfUp(s.d14));
+    setText('m4-ot', fmtIntHalfUp(s.b15));
+    setText('m5-ot', fmtIntHalfUp(s.c15));
+    setText('m6-ot', fmtIntHalfUp(s.d15));
+    setText('m4-com', fmtInt(s.b16));
+    setText('m5-com', fmtInt(s.c16));
+    setText('m6-com', fmtInt(s.d16));
+    setText('m4-sum', fmtInt(s.b17));
+    setText('m5-sum', fmtInt(s.c17));
+    setText('m6-sum', fmtInt(s.d17));
+    setText('e17', fmtInt(s.e17));
+    setText('j5', fmtInt(s.j5));
+    setText('k5', fmtInt(s.k5));
+
+    var planC = parseOptionalInput(document.getElementById('planCommuteTotal').value);
+    var planH = parseOptionalInput(document.getElementById('planOtTotal').value);
+    var b3v = Number.isFinite(s.b3eff) ? s.b3eff : 0;
+    var b2v = s.b2;
+    var f17v = s.f17;
+    if (!Number.isFinite(b2v) || b2v <= 0 || !Number.isFinite(b3v) || b3v <= 0 || !Number.isFinite(f17v)) {
+      setText('planMaxOt', '—');
+      setText('planMaxCommute', '—');
+    } else {
+      if (planC === null) {
+        setText('planMaxOt', '—');
+      } else if (Number.isNaN(planC)) {
+        setText('planMaxOt', '入力を確認してください');
+      } else if (planC < 0) {
+        setText('planMaxOt', '0以上の数を入力してください');
+      } else {
+        var remYenOt = f17v - b3v * planC;
+        var maxH = remYenOt / b2v;
+        if (remYenOt < 0) {
+          setText('planMaxOt', '0時間（この出社見込みでは、支給合計の上限枠を約' + fmtInt(Math.abs(remYenOt)) + '円オーバーする試算）');
+        } else {
+          setText('planMaxOt', fmtNum(maxH) + ' 時間');
+        }
+      }
+      if (planH === null) {
+        setText('planMaxCommute', '—');
+      } else if (Number.isNaN(planH)) {
+        setText('planMaxCommute', '入力を確認してください');
+      } else if (planH < 0) {
+        setText('planMaxCommute', '0以上の数を入力してください');
+      } else {
+        var remYenCom = f17v - b2v * planH;
+        var maxC = Math.floor(remYenCom / b3v);
+        if (remYenCom < 0) {
+          setText('planMaxCommute', '0回（この時間外見込みでは、支給合計の上限枠を約' + fmtInt(Math.abs(remYenCom)) + '円オーバーする試算）');
+        } else {
+          setText('planMaxCommute', fmtInt(maxC) + ' 回');
+        }
+      }
+    }
+
+    var rowFinal = getStandardSalary(calculateMonthlyIncome(s));
+    if (rowFinal) {
+      setText('gradeLabel', rowFinal.gradeLabel);
+      setText('stdPay', fmtInt(rowFinal.std));
+      setText('i4disp', rowFinal.std >= 1000 ? fmtInt(rowFinal.std / 1000) : fmtNum(rowFinal.std / 1000));
+      var ins = calculateInsurance(rowFinal, { care: care });
+      setText('insTotal', fmtDec(ins));
+    } else {
+      setText('gradeLabel', '—');
+      setText('stdPay', '—');
+      setText('i4disp', '—');
+      setText('insTotal', '—');
+    }
+  }
+
+  var nfDecIns = new Intl.NumberFormat('ja-JP', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+  function fmtDec(n) {
+    if (!Number.isFinite(n)) return '—';
+    return nfDecIns.format(n);
+  }
+
+  var ids = ['b3-pre', 'b3-post', 'b5a', 'b5b', 'b6', 'b7', 'd5', 'd6', 'd7', 'b12', 'j4', 'k4', 'planCommuteTotal', 'planOtTotal'];
+  ids.forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', recalc);
+    el.addEventListener('change', recalc);
+  });
+  document.getElementById('autoRange').addEventListener('change', recalc);
+  document.getElementById('care').addEventListener('change', recalc);
+
+  var basePayEl = document.getElementById('b12');
+  if (basePayEl) {
+    basePayEl.addEventListener('focus', function () {
+      basePayEl.value = stripBasePayDisplay(basePayEl.value);
+    });
+    basePayEl.addEventListener('blur', function () {
+      formatBasePayField();
+      recalc();
+    });
+  }
+
+  recalc();
+  formatBasePayField();
+})();
+  </script>
+</body>
+</html>
